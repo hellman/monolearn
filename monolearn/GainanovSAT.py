@@ -1,6 +1,5 @@
+import logging
 from subsets import SparseSet
-
-from divprop.logs import logging
 
 from .utils import truncstr
 from .LearnModule import LearnModule

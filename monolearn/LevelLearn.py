@@ -1,4 +1,4 @@
-from divprop.logs import logging
+import logging
 
 from .LearnModule import LearnModule
 

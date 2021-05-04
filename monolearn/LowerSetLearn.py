@@ -1,12 +1,12 @@
 import os
 import gzip
 import pickle
+import logging
 
 from collections import Counter
 from queue import Queue
 
 from subsets import SparseSet
-from divprop.logs import logging
 
 from .LevelLearn import LevelCache
 

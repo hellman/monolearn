@@ -1,8 +1,8 @@
+import logging
 from random import shuffle
 
 from subsets import SparseSet
 
-from divprop.logs import logging
 
 from optisolveapi.milp import MILP
 from optisolveapi.sat import CNF
