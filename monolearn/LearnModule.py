@@ -106,8 +106,7 @@ class LearnModule:
 
         self.xs = [self.sat.var() for i in range(self.N)]
         if init_sum:
-            self.xsum = self.sat.SeqAddMany(*[[x] for x in self.xs])
-            self.xsum.append(self.sat.ZERO)  # padding
+            self.xsum = self.sat.Card(self.xs)
 
         if init:
             self.log.info(

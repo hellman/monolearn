@@ -70,10 +70,10 @@ class GainanovSAT(LearnModule):
             assum = ()
             if self.do_min:
                 # <= self.level
-                assum = [-self.xsum[self.level]]
+                assum = [-self.xsum[i] for i in range(self.level + 1, len(self.xsum))]
             elif self.do_max:
                 # >= self.level
-                assum = [self.xsum[self.level]]
+                assum = [self.xsum[i] for i in range(self.level + 1)]
 
             sol = self.sat.solve(assumptions=assum)
             # self.log.debug(f"SAT solve: {bool(sol)}")
