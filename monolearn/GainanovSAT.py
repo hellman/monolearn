@@ -109,6 +109,8 @@ class GainanovSAT(LearnModule):
                 if self.sat.solve() is False:
                     self.log.info(f"exhausted from level {self.level}")
                     return False
+            else:
+                return False
         assert 0
 
     def learn_unknown(self, vec):
