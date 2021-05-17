@@ -220,6 +220,8 @@ class Oracle:
         self._lower_cache = LevelCache()
         self._upper_cache = LevelCache()
         self._cache = {}
+        self.n_calls = 0
+        self.n_queries = 0
 
     def disable_cache(self):
         self._cache = None
@@ -248,6 +250,7 @@ class Oracle:
         ) = data
 
     def __call__(self, vec: SparseSet):
+        self.n_calls += 1
         if self._cache and vec in self._cache:
             return self._cache[vec]
 
@@ -259,6 +262,7 @@ class Oracle:
             meta = self._upper_cache.meta.get(vec, self.UnknownMeta)
             return False, meta
 
+        self.n_queries += 1
         ret = self._query(vec)
         if self._cache is not None:
             self._cache[vec] = ret
