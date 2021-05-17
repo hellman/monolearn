@@ -14,7 +14,7 @@ class LevelLearn(LearnModule):
         if self.levels_lower:
             self.learn_lower(up_to=self.levels_lower - 1)
         if self.levels_upper:
-            self.learn_upper(down_to=self.n - self.levels_upper + 1)
+            self.learn_upper(down_to=self.N - self.levels_upper + 1)
 
     def learn_lower(self, up_to):
         cache = self.system.oracle._lower_cache
@@ -82,7 +82,69 @@ class LevelLearn(LearnModule):
                 break
 
     def learn_upper(self, down_to):
-        raise NotImplementedError()
+        cache = self.system.oracle._upper_cache
+
+        if cache.range is None:
+            current = self.N + 1
+        else:
+            assert cache.range[1] == self.N
+            current = cache.range[0]
+
+        if current > self.N:
+            vec = self.vec_full
+
+            is_lower, meta = self.oracle(vec)
+            if not is_lower:
+                self.system.meta[vec] = meta
+                cache.add(vec, meta)
+            cache.set_range(self.N, self.N)
+            current = self.N
+
+        if not cache.has(self.vec_full):
+            self.log.warning("full-vector is not in the upper set, trivial set")
+            return
+
+        for l in reversed(range(down_to, current)):
+            self.log.info(f"generating support, height={l} to {down_to}")
+
+            n_good = 0
+            n_total = 0
+
+            # cache stores only lower vectors
+            # only check new vectors that are compatible with lowers
+            # can be checked by counting refs
+            to_check = {}
+            for prev in cache.iter_weight(l + 1):
+                for down in prev.neibs_down():  # (n=self.N):
+                    to_check.setdefault(down, 0)
+                    to_check[down] += 1
+
+            for vec, cnt in to_check.items():
+                assert len(vec) == l
+                if cnt != self.N - l:
+                    continue
+
+                n_total += 1
+
+                is_lower, meta = self.oracle(vec)
+                if not is_lower:
+                    self.system.meta[vec] = meta
+                    cache.add(vec, meta)
+                    n_good += 1
+                else:
+                    # print("upper", vec)
+                    self.system.add_lower(vec, meta=meta, is_prime=True)
+
+            self.log.info(
+                f"generated support, height={l} to {down_to}: "
+                f"upper {n_good}/{n_total} compatible "
+                f"(frac. {(n_good+1)/(n_total+1):.3f})"
+            )
+            cache.set_range(l, self.N)
+
+            if n_good == 0:
+                self.log.warning(f"exhausted upper at level {l} (to {down_to})")
+                break
 
 
 class UnknownMeta:
