@@ -14,6 +14,7 @@ class GainanovSAT(LearnModule):
         solver: str = "pysat/cadical",
         save_rate: int = 100,
         limit: int = None,
+        start_level=None,
     ):
         assert sense in ("min", "max", None)
         self.do_min = sense == "min"
@@ -22,6 +23,7 @@ class GainanovSAT(LearnModule):
         self.solver = solver
         self.save_rate = int(save_rate)
         self.limit = None if limit is None else int(limit)
+        self.start_level = start_level
 
     def _learn(self):
         self.sat_init(init_sum=self.do_opt)
@@ -36,10 +38,15 @@ class GainanovSAT(LearnModule):
                 self.system.set_complete()
                 return True
 
-            if self.do_min:
+            if self.start_level is not None:
+                self.level = self.start_level
+            elif self.do_min:
                 self.level = 0
             elif self.do_max:
                 self.level = self.N
+            else:
+                assert 0
+            assert 0 <= self.level <= self.N
 
             self.log.info(f"starting at level {self.level}")
 
