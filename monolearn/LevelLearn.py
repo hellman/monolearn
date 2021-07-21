@@ -17,7 +17,7 @@ class LevelLearn(LearnModule):
             self.learn_upper(down_to=self.N - self.levels_upper + 1)
 
     def learn_lower(self, up_to):
-        cache = self.system.oracle._lower_cache
+        cache = self.oracle._lower_cache
 
         if cache.range is None:
             current = -1
@@ -82,7 +82,7 @@ class LevelLearn(LearnModule):
                 break
 
     def learn_upper(self, down_to):
-        cache = self.system.oracle._upper_cache
+        cache = self.oracle._upper_cache
 
         if cache.range is None:
             current = self.N + 1

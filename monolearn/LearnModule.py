@@ -16,12 +16,12 @@ class LearnModule:
     use_point_prec = True
     force_learn_complete = False
 
-    def init(self, system):
+    def init(self, system, oracle):
         self._options = self.__dict__.copy()
 
         self.N = system.n
         self.system = system
-        self.oracle = self.system.oracle
+        self.oracle = oracle
 
         self.milp = None
         self.sat = None

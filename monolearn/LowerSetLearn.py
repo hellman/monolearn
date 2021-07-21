@@ -20,20 +20,18 @@ class ExtraPrec:
 
 
 class LowerSetLearn:
-    DATA_VERSION = 3
+    DATA_VERSION = 4
     log = logging.getLogger(f"{__name__}:LowerSetLearn")
 
     def __init__(
         self,
         n: int,
-        oracle: callable = None,
         file: str = None,
         extra_prec: ExtraPrec = None,
     ):
         self.n = int(n)
 
         self.file = file
-        self.oracle = oracle
         self.extra_prec = extra_prec
 
         # "final" vectors, ideally prime elements
@@ -53,8 +51,6 @@ class LowerSetLearn:
         self.saved = False
 
     def clean(self):
-        self.oracle.clean()
-
         self.meta = {
             vec: meta for vec, meta in self.meta.items()
             if vec in self._lower or vec in self._upper
@@ -91,7 +87,6 @@ class LowerSetLearn:
         (
             version,
             self._lower, self._upper, self.is_complete,
-            self.oracle.data,
             self.meta, self.n,
         ) = data
         assert version == self.DATA_VERSION, "system format updated?"
@@ -103,7 +98,6 @@ class LowerSetLearn:
         data = (
             self.DATA_VERSION,
             self._lower, self._upper, self.is_complete,
-            self.oracle.data,
             self.meta, self.n,
         )
         with gzip.open(filename, "wb") as f:
