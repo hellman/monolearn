@@ -2,7 +2,7 @@ import logging
 from random import shuffle, random
 from itertools import combinations
 
-from subsets import SparseSet
+from monolearn.SparseSet import SparseSet
 
 
 from .LearnModule import LearnModule

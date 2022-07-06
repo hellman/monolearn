@@ -6,7 +6,7 @@ import logging
 from collections import Counter
 from queue import Queue
 
-from subsets import SparseSet
+from monolearn.SparseSet import SparseSet
 
 from .LevelLearn import LevelCache
 

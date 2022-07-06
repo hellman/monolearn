@@ -1,5 +1,5 @@
 import logging
-from subsets import SparseSet
+from monolearn.SparseSet import SparseSet
 
 from .utils import truncstr
 from .LearnModule import LearnModule

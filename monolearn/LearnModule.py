@@ -1,7 +1,7 @@
 import logging
 from random import shuffle
 
-from subsets import SparseSet
+from monolearn.SparseSet import SparseSet
 
 
 from optisolveapi.milp import MILP
