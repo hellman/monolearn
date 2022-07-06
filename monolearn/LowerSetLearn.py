@@ -38,7 +38,8 @@ class LowerSetLearn:
         # but not always practical to check/push
         self._lower = set()
         self._upper = set()
-        self.is_complete = False
+        self.is_complete_lower = False
+        self.is_complete_upper = False
 
         self.meta = {}  # info per elements of lower/upper
 
@@ -46,8 +47,12 @@ class LowerSetLearn:
         if self.file and os.path.exists(self.file):
             self.load()
 
-    def set_complete(self):
-        self.is_complete = True
+    def set_complete_lower(self):
+        self.is_complete_lower = True
+        self.saved = False
+
+    def set_complete_upper(self):
+        self.is_complete_upper = True
         self.saved = False
 
     def clean(self):
@@ -86,7 +91,8 @@ class LowerSetLearn:
                 return False
         (
             version,
-            self._lower, self._upper, self.is_complete,
+            self._lower, self._upper,
+            self.is_complete_lower, self.is_complete_upper,
             self.meta, self.n,
         ) = data
         assert version == self.DATA_VERSION, "system format updated?"
@@ -97,7 +103,8 @@ class LowerSetLearn:
     def save_to_file(self, filename):
         data = (
             self.DATA_VERSION,
-            self._lower, self._upper, self.is_complete,
+            self._lower, self._upper,
+            self.is_complete_lower, self.is_complete_upper,
             self.meta, self.n,
         )
         with gzip.open(filename, "wb") as f:
@@ -114,8 +121,11 @@ class LowerSetLearn:
                 f"{sz}:{cnt}" for sz, cnt in sorted(freq.items())
             )
             self.log.info(f"  {name} {len(s)}: {freqstr}")
-        if self.is_complete:
-            self.log.info("  system is complete !")
+
+        if self.is_complete_lower:
+            self.log.info("  system is complete for lower!")
+        if self.is_complete_upper:
+            self.log.info("  system is complete for upper!")
 
     def is_known_lower(self, vec):
         return vec in self._lower
@@ -182,7 +192,7 @@ class ExtraPrec_LowerSet(ExtraPrec):
         return SparseSet(res)
 
     def expand(self, vec: SparseSet):
-        """LowerSet"""
+        """LowerClosure"""
         res = set()
         qs = [self.int2point[i] for i in vec]
         assert all(isinstance(q, SparseSet) for q in qs)
