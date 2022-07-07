@@ -1,5 +1,4 @@
 import json
-from json import JSONEncoder
 from binteger import Bin
 
 from monolearn.SparseSet import SparseSet
@@ -21,7 +20,7 @@ def truncstr(s, n=100):
 
 def dictify(obj):
     if isinstance(obj, set):
-        return {"t": "set", "l": tuple(obj)}
+        return {"t": "set", "l": tuple(map(dictify, obj))}
     elif isinstance(obj, SparseSet):
         return {"t": "SparseSet", "l": tuple(obj)}
     elif isinstance(obj, Bin):
@@ -41,14 +40,15 @@ def dictify(obj):
 
 
 def undictify(obj):
+
     if isinstance(obj, dict):
         t = obj["t"]
         if t == "dict":
             return {undictify(k): undictify(v) for k, v in obj["d"]}
         elif t == "set":
-            return set(obj["t"])
+            return set(map(undictify, obj["l"]))
         elif t == "SparseSet":
-            return SparseSet(obj["t"])
+            return SparseSet(obj["l"])
         elif t == "Bin":
             return Bin(obj["x"], obj["n"])
         raise TypeError()
