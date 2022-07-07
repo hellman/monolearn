@@ -1,7 +1,10 @@
 import os
+import json
 import gzip
+import bz2
 import pickle
 import logging
+from tempfile import NamedTemporaryFile
 
 from collections import Counter
 from queue import Queue
@@ -83,7 +86,7 @@ class LowerSetLearn:
 
     def load_from_file(self, filename):
         prevn = self.n
-        with gzip.open(filename, "rb") as f:
+        with bz2.open(filename, "rb") as f:
             try:
                 data = pickle.load(f)
             except EOFError as err:
@@ -107,8 +110,12 @@ class LowerSetLearn:
             self.is_complete_lower, self.is_complete_upper,
             self.meta, self.n,
         )
-        with gzip.open(filename, "wb") as f:
-            pickle.dump(data, f)
+
+        with NamedTemporaryFile() as f:
+            with bz2.open(f.name, "wb") as fz:
+                pickle.dump(data, fz)
+            os.rename(f.name, filename)
+            open(f.name, "w").close()
         self.log.info(f"saved state to file {filename}")
 
     def log_info(self):
