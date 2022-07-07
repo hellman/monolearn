@@ -1,7 +1,5 @@
 from itertools import chain
 
-from binteger import Bin
-
 
 class SparseSet(tuple):
     def __new__(cls, vec):
@@ -14,9 +12,6 @@ class SparseSet(tuple):
             for a, b in zip(self, self[1:]):
                 assert a < b
         return self
-
-    def as_Bin(self, n):
-        return Bin(set(self[:]), n)
 
     def _coerce(self, other):
         if isinstance(other, (list, set, tuple)):
@@ -150,6 +145,7 @@ class SparseSet(tuple):
         >>> SparseSet((1, 2, 5)).to_Bin(10)
         Bin(0b0110010000, n=10)
         """
+        from binteger import Bin
         return Bin(set(self), n=n)
 
     def neibs_down(self, n=None):
