@@ -2,7 +2,6 @@ import os
 import json
 import gzip
 import bz2
-import pickle
 import logging
 from tempfile import NamedTemporaryFile
 
@@ -10,6 +9,7 @@ from collections import Counter
 from queue import Queue
 
 from monolearn.SparseSet import SparseSet
+from monolearn.utils import loads, dumps
 
 from .LevelLearn import LevelCache
 
@@ -86,9 +86,9 @@ class LowerSetLearn:
 
     def load_from_file(self, filename):
         prevn = self.n
-        with bz2.open(filename, "rb") as f:
+        with bz2.open(filename, "rt") as f:
             try:
-                data = pickle.load(f)
+                data = loads(f.read())
             except EOFError as err:
                 self.log.error(f"loading system {filename} failed: {err}")
                 return False
@@ -112,8 +112,8 @@ class LowerSetLearn:
         )
 
         with NamedTemporaryFile() as f:
-            with bz2.open(f.name, "wb") as fz:
-                pickle.dump(data, fz)
+            with bz2.open(f.name, "wt") as fz:
+                fz.write(dumps(data))
             os.rename(f.name, filename)
             open(f.name, "w").close()
         self.log.info(f"saved state to file {filename}")
