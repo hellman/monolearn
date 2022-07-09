@@ -37,7 +37,9 @@ class LearnModule:
             self.use_point_prec = False
 
     def learn(self, safe=True):
-        if self.system.is_complete and not self.force_learn_complete:
+        if self.system.is_complete_lower \
+           and self.system.is_complete_upper \
+           and not self.force_learn_complete:
             self.log.info("skipping learning - already marked complete")
             return
         self.log.info("===============")

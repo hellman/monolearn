@@ -50,6 +50,11 @@ class LowerSetLearn:
         if self.file and os.path.exists(self.file):
             self.load()
 
+    def set_complete(self):
+        self.is_complete_lower = True
+        self.is_complete_upper = True
+        self.saved = False
+
     def set_complete_lower(self):
         self.is_complete_lower = True
         self.saved = False
