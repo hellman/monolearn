@@ -68,8 +68,9 @@ def undictify(obj):
 
 
 def dictify_add_class(cls):
+    # hacks..
     name = cls.__name__
-    if name in CLASSES:
+    if CLASSES.get(name, cls) is not cls:
         raise KeyError(
             f"dictify already has class for {name}: {CLASSES[name]}"
         )
