@@ -50,6 +50,10 @@ class LowerSetLearn:
         if self.file and os.path.exists(self.file):
             self.load()
 
+    @property
+    def is_complete(self):
+        return self.is_complete_lower and self.is_complete_upper
+
     def set_complete(self):
         self.is_complete_lower = True
         self.is_complete_upper = True
@@ -188,10 +192,14 @@ class LowerSetLearn:
         return len(self._upper)
 
 
+def support(pt):
+    return SparseSet(i for i, v in enumerate(pt) if v)
+
+
 class ExtraPrec_LowerSet(ExtraPrec):
     def __init__(self, int2point: list, point2int: map):
-        self.int2point = [SparseSet(v.support) for v in int2point]
-        self.point2int = {SparseSet(v.support): i for v, i in point2int.items()}
+        self.int2point = [support(v) for v in int2point]
+        self.point2int = {support(v): i for v, i in point2int.items()}
 
     def reduce(self, vec: SparseSet):
         """MaxSet"""
