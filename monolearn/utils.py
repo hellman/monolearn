@@ -105,11 +105,15 @@ class TimeStat:
             return "TimeStat:N/A"
         return (
             "["
-            f"2^{math.log(self.n_calls,2):.52f} calls"
+            f"2^{math.log(self.n_calls,2):5.2f} calls"
             f" x {self.total_time / self.n_calls:.3f}s avg"
-            f" = {self.total_time:.1f}s total"
+            f" = {self.total_time:10.1f}s"
             "]"
         )
+
+    def add(self, time: float, num=1):
+        self.n_calls += num
+        self.total_time += time
 
     __repr__ = __str__
 
@@ -117,33 +121,30 @@ class TimeStat:
         self.n_calls = 0
         self.total_time = 0
 
+    @classmethod
+    def log(cls, func):
+        try:
+            name = func.__qualname__
+        except AttributeError:
+            name = type(func).__qualname__
 
-def time_stat(func):
-    try:
-        name = func.__qualname__
-    except AttributeError:
-        name = type(func).__qualname__
+        if name in TimeStat.Stat:
+            log.warning(f"double time_stat? {func}")
+        else:
+            cls.Stat[name] = cls()
 
-    if name in TimeStat.Stat:
-        log.warning(f"double time_stat? {func}")
-    else:
-        TimeStat.Stat[name] = TimeStat()
+        @wraps(func)
+        def time_func(*args, **kwargs):
+            t0 = time.time()
+            ret = func(*args, **kwargs)
+            t = time.time() - t0
 
-    @wraps(func)
-    def time_func(*args, **kwargs):
-        t0 = time.time()
-        ret = func(*args, **kwargs)
-        t = time.time() - t0
+            cls.Stat[name].add(time=t)
+            return ret
+        return time_func
 
-        ts = TimeStat.Stat[name]
-        ts.n_calls += 1
-        ts.total_time += t
-        return ret
-    return time_func
-
-
-
-time_stat.stat = {}
+    def __bool__(self):
+        return self.n_calls > 0
 
 
 if __name__ == '__main__':

@@ -6,7 +6,7 @@ from optisolveapi.sat import CNF
 
 from monolearn.SparseSet import SparseSet
 
-from .utils import truncstr, time_stat
+from .utils import truncstr, TimeStat
 
 
 class LearnModule:
@@ -66,13 +66,13 @@ class LearnModule:
         self.log.info("")
         return ret
 
-    @time_stat
+    @TimeStat.log
     def query(self, vec):
         if self.use_point_prec:
             vec = self.system.extra_prec.reduce(vec)
         return self.call_oracle(vec)
 
-    @time_stat
+    @TimeStat.log
     def call_oracle(self, vec):
         return self.oracle(vec)
 
@@ -159,7 +159,7 @@ class LearnModule:
                 -self.xs[i] for i in vec
             ))
 
-    @time_stat
+    @TimeStat.log
     def learn_down(self, vec: SparseSet, meta=None):
         """reduce given upper element to minimal one"""
         if self.system.is_known_upper(vec):
@@ -193,7 +193,7 @@ class LearnModule:
             f"learnt minimal upper vec wt {len(vec)}: {truncstr(vec)}"
         )
 
-    @time_stat
+    @TimeStat.log
     def learn_up(self, vec: SparseSet, meta=None):
         """lift given lower element to a maximal one"""
         if self.system.is_known_lower(vec):
