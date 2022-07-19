@@ -1,8 +1,14 @@
 import json
+import math
+import time
+import logging
+from functools import wraps
+
 from binteger import Bin
 
 from monolearn.SparseSet import SparseSet
 
+log = logging.getLogger(__name__)
 
 CLASSES = {"SparseSet": SparseSet}
 
@@ -84,6 +90,60 @@ def dumps(obj):
 
 def loads(s):
     return undictify(json.loads(s))
+
+
+
+class TimeStat:
+    Stat = {}
+
+    def __init__(self):
+        self.n_calls = 0
+        self.total_time = 0
+
+    def __str__(self):
+        if self.n_calls == 0:
+            return "TimeStat:N/A"
+        return (
+            "["
+            f"2^{math.log(self.n_calls,2):.52f} calls"
+            f" x {self.total_time / self.n_calls:.3f}s avg"
+            f" = {self.total_time:.1f}s total"
+            "]"
+        )
+
+    __repr__ = __str__
+
+    def reset(self):
+        self.n_calls = 0
+        self.total_time = 0
+
+
+def time_stat(func):
+    try:
+        name = func.__qualname__
+    except AttributeError:
+        name = type(func).__qualname__
+
+    if name in TimeStat.Stat:
+        log.warning(f"double time_stat? {func}")
+    else:
+        TimeStat.Stat[name] = TimeStat()
+
+    @wraps(func)
+    def time_func(*args, **kwargs):
+        t0 = time.time()
+        ret = func(*args, **kwargs)
+        t = time.time() - t0
+
+        ts = TimeStat.Stat[name]
+        ts.n_calls += 1
+        ts.total_time += t
+        return ret
+    return time_func
+
+
+
+time_stat.stat = {}
 
 
 if __name__ == '__main__':

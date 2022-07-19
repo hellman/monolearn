@@ -1,7 +1,8 @@
 import logging
+
 from monolearn.SparseSet import SparseSet
 
-from .utils import truncstr
+from .utils import truncstr, time_stat
 from .LearnModule import LearnModule
 
 
@@ -67,6 +68,7 @@ class GainanovSAT(LearnModule):
         self.system.save()
         return False
 
+    @time_stat
     def find_new_unknown(self):
         while True:
             # <= level
@@ -121,6 +123,7 @@ class GainanovSAT(LearnModule):
                 return False
         assert 0
 
+    @time_stat
     def learn_unknown(self, vec):
         is_lower, meta = self.query(vec)
 

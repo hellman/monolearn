@@ -1,13 +1,12 @@
 import logging
 from random import shuffle
 
-from monolearn.SparseSet import SparseSet
-
-
 from optisolveapi.milp import MILP
 from optisolveapi.sat import CNF
 
-from .utils import truncstr
+from monolearn.SparseSet import SparseSet
+
+from .utils import truncstr, time_stat
 
 
 class LearnModule:
@@ -67,9 +66,14 @@ class LearnModule:
         self.log.info("")
         return ret
 
+    @time_stat
     def query(self, vec):
         if self.use_point_prec:
             vec = self.system.extra_prec.reduce(vec)
+        return self.call_oracle(vec)
+
+    @time_stat
+    def call_oracle(self, vec):
         return self.oracle(vec)
 
     def milp_init(self, maximization=True, init=True):
@@ -155,6 +159,7 @@ class LearnModule:
                 -self.xs[i] for i in vec
             ))
 
+    @time_stat
     def learn_down(self, vec: SparseSet, meta=None):
         """reduce given upper element to minimal one"""
         if self.system.is_known_upper(vec):
@@ -188,6 +193,7 @@ class LearnModule:
             f"learnt minimal upper vec wt {len(vec)}: {truncstr(vec)}"
         )
 
+    @time_stat
     def learn_up(self, vec: SparseSet, meta=None):
         """lift given lower element to a maximal one"""
         if self.system.is_known_lower(vec):
