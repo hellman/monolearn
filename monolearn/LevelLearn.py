@@ -1,5 +1,6 @@
 import logging
 
+from .utils import TimeStat
 from .LearnModule import LearnModule
 
 
@@ -16,6 +17,7 @@ class LevelLearn(LearnModule):
         if self.levels_upper:
             self.learn_upper(down_to=self.N - self.levels_upper + 1)
 
+    @TimeStat.log
     def learn_lower(self, up_to):
         cache = self.oracle._lower_cache
 
@@ -28,7 +30,7 @@ class LevelLearn(LearnModule):
         if current < 0:
             vec = self.vec_empty
 
-            is_lower, meta = self.oracle(vec)
+            is_lower, meta = self.call_oracle(vec)
             if is_lower:
                 self.system.meta[vec] = meta
                 cache.add(vec, meta)
@@ -61,7 +63,7 @@ class LevelLearn(LearnModule):
 
                 n_total += 1
 
-                is_lower, meta = self.oracle(vec)
+                is_lower, meta = self.call_oracle(vec)
                 if is_lower:
                     self.system.meta[vec] = meta
                     cache.add(vec, meta)
@@ -81,6 +83,7 @@ class LevelLearn(LearnModule):
                 self.log.warning(f"exhausted lower at level {l}/{up_to}")
                 break
 
+    @TimeStat.log
     def learn_upper(self, down_to):
         cache = self.oracle._upper_cache
 
@@ -93,7 +96,7 @@ class LevelLearn(LearnModule):
         if current > self.N:
             vec = self.vec_full
 
-            is_lower, meta = self.oracle(vec)
+            is_lower, meta = self.call_oracle(vec)
             if not is_lower:
                 self.system.meta[vec] = meta
                 cache.add(vec, meta)
@@ -126,7 +129,7 @@ class LevelLearn(LearnModule):
 
                 n_total += 1
 
-                is_lower, meta = self.oracle(vec)
+                is_lower, meta = self.call_oracle(vec)
                 if not is_lower:
                     self.system.meta[vec] = meta
                     cache.add(vec, meta)
