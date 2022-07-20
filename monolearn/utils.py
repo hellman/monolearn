@@ -64,7 +64,7 @@ def undictify(obj):
         elif t in CLASSES:
             return CLASSES[t](obj["l"])
 
-        raise TypeError()
+        raise TypeError(f"Unrecognized type {t}")
 
     if isinstance(obj, tuple):
         return tuple(undictify(v) for v in obj)
