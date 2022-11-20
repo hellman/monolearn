@@ -1,6 +1,7 @@
 import os
-import json
-import gzip
+import shutil
+# import json
+# import gzip
 import bz2
 import logging
 from tempfile import NamedTemporaryFile
@@ -123,7 +124,11 @@ class LowerSetLearn:
         with NamedTemporaryFile() as f:
             with bz2.open(f.name, "wt") as fz:
                 fz.write(dumps(data))
-            os.rename(f.name, filename)
+
+            # does not work across devices...
+            # https://stackoverflow.com/questions/42392600/oserror-errno-18-invalid-cross-device-link
+            # os.rename(f.name, filename)
+            shutil.move(f.name, filename)
             open(f.name, "w").close()
         self.log.info(f"saved state to file {filename}")
 
