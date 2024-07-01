@@ -96,7 +96,15 @@ def loads(s):
 class TimeStat:
     Stat = {}
 
+    @classmethod
+    def clear_all(cls):
+        for stat in cls.Stat.values():
+            stat.clear()
+
     def __init__(self):
+        self.clear()
+
+    def clear(self):
         self.n_calls = 0
         self.total_time = 0
 
@@ -114,6 +122,10 @@ class TimeStat:
     def add(self, time: float, num=1):
         self.n_calls += num
         self.total_time += time
+
+    def merge(self, other: "TimeStat"):
+        self.n_calls += other.n_calls
+        self.total_time += other.total_time
 
     __repr__ = __str__
 
