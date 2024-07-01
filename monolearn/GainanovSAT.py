@@ -37,7 +37,6 @@ class GainanovSAT(LearnModule):
                 # if was not marked, we won't be here
                 # so mark
                 self.system.set_complete()
-                self.system.set_complete()
                 return True
 
             if self.start_level is not None:
