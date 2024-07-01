@@ -96,17 +96,17 @@ def loads(s):
 class TimeStat:
     Stat = {}
 
-    @classmethod
-    def clear_all(cls):
-        for stat in cls.Stat.values():
-            stat.clear()
-
     def __init__(self):
-        self.clear()
+        self.reset()
 
-    def clear(self):
+    def reset(self):
         self.n_calls = 0
         self.total_time = 0
+
+    @classmethod
+    def reset_all(cls):
+        for stat in cls.Stat.values():
+            stat.reset()
 
     def __str__(self):
         if self.n_calls == 0:
@@ -128,10 +128,6 @@ class TimeStat:
         self.total_time += other.total_time
 
     __repr__ = __str__
-
-    def reset(self):
-        self.n_calls = 0
-        self.total_time = 0
 
     @classmethod
     def log(cls, func):
